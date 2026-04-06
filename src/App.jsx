@@ -104,7 +104,7 @@ function App() {
         </div>
 
         {/* Códigos de peligro H */}
-        <Field label="Pegar aquí códigos de peligro">
+        <Field label="Pegar aquí códigos de peligro" style={{ marginBottom: '20px' }}>
           <textarea
             name="hazardStatements"
             value={formData.hazardStatements}
@@ -115,7 +115,7 @@ function App() {
         </Field>
 
         {/* Códigos de prudencia P */}
-        <Field label="Pegar aquí códigos de prudencia">
+        <Field label="Pegar aquí códigos de prudencia" style={{ marginBottom: '20px' }}>
           <textarea
             name="precautionaryStatements"
             value={formData.precautionaryStatements}

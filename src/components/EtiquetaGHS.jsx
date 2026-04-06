@@ -41,7 +41,7 @@ const EtiquetaGHS = forwardRef(({ data }, ref) => {
     ].filter(Boolean).join('. ');
 
     return (
-        <div style={{ display: 'none' }}>
+        <div className="print-only-container">
             {/* Contenedor envolvente para centrar el PDF en la página impresa */}
             <div
                 ref={ref}
@@ -92,9 +92,9 @@ const EtiquetaGHS = forwardRef(({ data }, ref) => {
                     </div>
 
                     {/* CAS / ONU (Derecha) */}
-                    <div style={{ width: '28%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-end', fontWeight: 'bold', fontSize: '13px', lineHeight: '1.4' }}>
-                        {data.casNumber && <div>CAS: {data.casNumber}</div>}
-                        <div>ONU: {data.onuNumber || 'NO REGULADO'}</div>
+                    <div style={{ width: '26%', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'right', fontWeight: 'bold', fontSize: '13px', lineHeight: '1.4', wordBreak: 'break-word' }}>
+                        {data.casNumber && <div style={{ width: '100%' }}>CAS: {data.casNumber}</div>}
+                        <div style={{ width: '100%' }}>ONU: {data.onuNumber || 'NO REGULADO'}</div>
                     </div>
                 </div>
 

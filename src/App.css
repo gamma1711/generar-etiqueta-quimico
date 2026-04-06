@@ -273,3 +273,32 @@ body {
   justify-content: flex-end;
   padding: 16px 0 0;
 }
+
+/* ── Fallback de Impresión para Móviles ── */
+.print-only-container {
+  display: none;
+}
+
+@media print {
+  /* Ocultar únicamente el formulario principal en lugar de todo el body (para no afectar a react-to-print en PC) */
+  .card {
+    display: none !important;
+  }
+
+  .print-only-container {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .page-wrapper {
+    background: #fff !important;
+    padding: 0 !important;
+  }
+
+  @page {
+    margin: 0;
+  }
+}
