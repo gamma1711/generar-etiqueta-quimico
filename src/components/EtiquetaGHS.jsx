@@ -1,105 +1,161 @@
 import React, { forwardRef } from 'react';
 
-// Mapeo de IDs de pictogramas a emojis o imágenes reales
-const mapPictograms = {
-    inflamable: '🔥',
-    exclamacion: '!',
-    corrosivo: '🧪',
-    gas: '🧴',
-    explosivo: '💥',
-    comburente: '⭕',
-    toxicidad: '💀',
-    salud: '👤',
-    entorno: '🐟'
+// Imágenes de pictogramas GHS
+import imgAcid from '../assets/acid.png';
+import imgCircleflame from '../assets/circleflame.png';
+import imgEnvironment from '../assets/environment.png';
+import imgExclaim from '../assets/exclaim.png';
+import imgExplosion from '../assets/explosion.png';
+import imgFlame from '../assets/flame.png';
+import imgGasbottle from '../assets/gasbottle.png';
+import imgHazardhealth from '../assets/hazardhealth.png';
+import imgSkull from '../assets/skull.png';
+import imgRevergyLogo from '../assets/1-revergy_cuadrado.png';
+
+// Mapeo de ID → imagen del asset
+const pictogramImages = {
+    corrosivo: imgAcid,
+    inflamable: imgFlame,
+    entorno: imgEnvironment,
+    exclamacion: imgExclaim,
+    explosivo: imgExplosion,
+    comburente: imgCircleflame,
+    gas: imgGasbottle,
+    salud: imgHazardhealth,
+    toxicidad: imgSkull,
 };
 
-const EtiquetaGHS = forwardRef(({ data, logoPreview }, ref) => {
+const EtiquetaGHS = forwardRef(({ data }, ref) => {
     if (!data) return null;
 
-    // Filtrar y mapear solo los pictogramas seleccionados
-    const selectedPictogramIcons = Object.keys(data.pictograms)
+    // Pictogramas seleccionados
+    const selectedPics = Object.keys(data.pictograms)
         .filter(key => data.pictograms[key])
-        .map(key => mapPictograms[key]);
+        .map(key => ({ id: key, src: pictogramImages[key] }))
+        .filter(p => p.src);
+
+    const fabricanteTexto = [
+        data.manufacturerName,
+        data.manufacturerAddress ? `Dirección: ${data.manufacturerAddress}` : '',
+        data.manufacturerPhone   ? `Teléfono: ${data.manufacturerPhone}`   : '',
+    ].filter(Boolean).join('. ');
 
     return (
-        <div className="p-4" style={{ display: 'none' }}> {/* Oculto en pantalla */}
+        <div style={{ display: 'none' }}>
+            {/* Contenedor envolvente para centrar el PDF en la página impresa */}
             <div
                 ref={ref}
-                className="bg-white border-[6px] border-black p-6 font-sans relative"
-                style={{ width: '800px', height: '560px', boxSizing: 'border-box' }} // Tamaño fijo para PDF
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    paddingTop: '60px',
+                    width: '100%',
+                }}
             >
-                {/* Texto Vertical de Marca a la derecha */}
-                <div className="absolute right-0 top-1/2 -rotate-90 origin-right translate-x-[calc(50%-1.5rem)] text-xs text-blue-800 font-medium whitespace-nowrap">
-                    {data.verticalText || 'GHSE Consulting: www.ghse.com.mx'}
-                </div>
+                {/* La etiqueta real */}
+                <div
+                    style={{
+                        width: '780px',
+                        minHeight: '520px',
+                        boxSizing: 'border-box',
+                        border: '5px solid #000',
+                        padding: '25px', // padding simétrico
+                        fontFamily: 'Arial, sans-serif',
+                        position: 'relative',
+                        backgroundColor: '#fff',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
 
-                {/* Cabecera: Logo, Nombre, Palabra, Códigos */}
-                <div className="flex gap-4 items-start mb-6">
-                    {/* Logo */}
-                    <div className="w-16 h-16 flex-shrink-0">
-                        {logoPreview ? (
-                            <img src={logoPreview} alt="Logo Empresa" className="w-full h-full object-contain" />
-                        ) : (
-                            <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-400">Logo</div>
-                        )}
-                    </div>
 
-                    {/* Nombre del Producto */}
-                    <div className="flex-grow">
-                        <h1 className="text-4xl font-bold uppercase">{data.chemicalName || 'NOMBRE DEL QUÍMICO'}</h1>
-                    </div>
-
-                    {/* Palabra de Advertencia */}
-                    <div className="text-center px-4">
-                        <span className="text-gray-500 text-xs">Palabra de advertencia</span>
-                        <div className={`text-3xl font-bold uppercase ${data.signalWord === 'PELIGRO' ? 'text-red-600' : 'text-orange-500'}`}>
-                            {data.signalWord || 'PALABRA'}
+                {/* ── CABECERA ── */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', width: '100%' }}>
+                    
+                    {/* Logo y Nombre del Químico (Izquierda) */}
+                    <div style={{ width: '48%', display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'flex-start' }}>
+                        <img
+                            src={imgRevergyLogo}
+                            alt="Revergy"
+                            style={{ width: '70px', height: '70px', objectFit: 'contain', flexShrink: 0 }}
+                        />
+                        <div style={{ textAlign: 'left', fontWeight: 'bold', fontSize: '18px', textTransform: 'uppercase', lineHeight: '1.2' }}>
+                            {data.chemicalName || 'NOMBRE DEL QUÍMICO'}
                         </div>
                     </div>
 
-                    {/* Códigos CAS/ONU */}
-                    <div className="text-right text-xs space-y-1">
-                        <div>CAS: {data.casNumber || 'N/A'}</div>
+                    {/* Palabra de Advertencia (Centro) */}
+                    <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '22px', textTransform: 'uppercase' }}>
+                            {data.signalWord || ''}
+                        </div>
+                    </div>
+
+                    {/* CAS / ONU (Derecha) */}
+                    <div style={{ width: '28%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-end', fontWeight: 'bold', fontSize: '13px', lineHeight: '1.4' }}>
+                        {data.casNumber && <div>CAS: {data.casNumber}</div>}
                         <div>ONU: {data.onuNumber || 'NO REGULADO'}</div>
                     </div>
                 </div>
 
-                {/* Cuerpo: Pictogramas y Textos de Riesgo */}
-                <div className="flex gap-8 mb-8">
-                    {/* Pictogramas */}
-                    <div className="w-1/3 flex flex-col items-center gap-2">
-                        {selectedPictogramIcons.length > 0 ? (
-                            selectedPictogramIcons.slice(0, 3).map((icon, index) => (
-                                <div key={index} className="w-28 h-28 border-4 border-red-600 rotate-45 flex items-center justify-center m-4">
-                                    <span className="-rotate-45 font-bold text-6xl">{icon}</span>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="text-sm text-gray-400 italic">Sin pictogramas</div>
+                {/* ── CUERPO ── */}
+                <div style={{ display: 'flex', flex: 1, marginTop: '5px' }}>
+                    
+                    {/* Columna Izquierda: Pictogramas */}
+                    <div style={{ width: '38%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        
+                        {/* Pictogramas */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', marginTop: '10px' }}>
+                            {selectedPics.length > 0 ? (
+                                selectedPics.map(pic => (
+                                    <img key={pic.id} src={pic.src} alt={pic.id} style={{ width: '110px', height: '110px', objectFit: 'contain' }} />
+                                ))
+                            ) : (
+                                <div style={{ fontSize: '11px', color: '#aaa', fontStyle: 'italic' }}>Sin pictogramas</div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Columna Derecha: Frases H y P */}
+                    <div style={{ flex: 1, paddingLeft: '15px', fontSize: '15px', lineHeight: '1.5', paddingRight: '20px' }}>
+                        {data.hazardStatements && (
+                            <p style={{ whiteSpace: 'pre-line', marginBottom: '8px' }}>
+                                {data.hazardStatements}
+                            </p>
+                        )}
+                        {data.precautionaryStatements && (
+                            <p style={{ whiteSpace: 'pre-line' }}>
+                                {data.precautionaryStatements}
+                            </p>
+                        )}
+                        {!data.hazardStatements && !data.precautionaryStatements && (
+                            <p style={{ color: '#aaa', fontStyle: 'italic', fontSize: '12px' }}>
+                                Aquí aparecerán las indicaciones de peligro (H) y consejos de prudencia (P)...
+                            </p>
                         )}
                     </div>
+                </div>
 
-                    {/* Frases H y P */}
-                    <div className="w-2/3 space-y-4 text-sm">
-                        <p className="whitespace-pre-line">{data.hazardStatements || 'Aquí aparecerán las indicaciones de peligro (Frases H)...'}</p>
-                        <p className="whitespace-pre-line">{data.precautionaryStatements || 'Aquí aparecerán los consejos de prudencia (Frases P)...'}</p>
+                {/* ── PIE DE PÁGINA ── */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', marginTop: '35px' }}>
+                    {/* Sección Emergencia */}
+                    <div style={{ width: '45%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{ textDecoration: 'underline', textTransform: 'uppercase', fontSize: '12px', marginBottom: '5px' }}>
+                            EN CASO DE EMERGENCIA
+                        </div>
+                        <div style={{ fontWeight: 'bold', fontSize: '18px', textAlign: 'center', lineHeight: '1.3' }}>
+                            {data.emergencyContact || 'Teléfono'}
+                        </div>
+                    </div>
+
+                    {/* Sección Fabricante */}
+                    <div style={{ flex: 1, fontSize: '13px', lineHeight: '1.5', paddingLeft: '15px' }}>
+                        <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>FABRICANTE:</div>
+                        <div>{fabricanteTexto || 'Nombre del fabricante. Dirección.'}</div>
                     </div>
                 </div>
 
-                {/* Pie de página: Emergencia y Fabricante */}
-                <div className="grid grid-cols-2 gap-8 text-xs border-t border-gray-200 pt-4 mt-auto">
-                    <div>
-                        <h4 className="font-bold uppercase mb-1">En caso de emergencia</h4>
-                        <p className="text-xl font-bold whitespace-pre-line">{data.emergencyContact || 'Teléfono / Contacto'}</p>
-                    </div>
-                    <div>
-                        <h4 className="font-bold uppercase mb-1">Fabricante</h4>
-                        <p className="font-medium">{data.manufacturerName || 'Nombre del Fabricante'}</p>
-                        <p>{data.manufacturerAddress || 'Dirección complete'}</p>
-                        <p>Tel: {data.manufacturerPhone || 'Teléfono'}</p>
-                    </div>
-                </div>
-
+            </div>
             </div>
         </div>
     );
