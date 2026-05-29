@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import { eppList } from '../data/eppData';
 
 // Imágenes de pictogramas GHS
 import imgAcid from '../assets/acid.png';
@@ -33,6 +34,12 @@ const EtiquetaGHS = forwardRef(({ data }, ref) => {
         .filter(key => data.pictograms[key])
         .map(key => ({ id: key, src: pictogramImages[key] }))
         .filter(p => p.src);
+
+    // EPPs seleccionados
+    const selectedEpps = Object.keys(data.epps || {})
+        .filter(key => data.epps[key])
+        .map(key => eppList.find(e => e.id === key))
+        .filter(Boolean);
 
     const fabricanteTexto = [
         data.manufacturerName,
@@ -101,7 +108,7 @@ const EtiquetaGHS = forwardRef(({ data }, ref) => {
                 {/* ── CUERPO ── */}
                 <div style={{ display: 'flex', flex: 1, marginTop: '5px' }}>
                     
-                    {/* Columna Izquierda: Pictogramas */}
+                    {/* Columna Izquierda: Pictogramas y EPPs */}
                     <div style={{ width: '38%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         
                         {/* Pictogramas */}
@@ -114,6 +121,15 @@ const EtiquetaGHS = forwardRef(({ data }, ref) => {
                                 <div style={{ fontSize: '11px', color: '#aaa', fontStyle: 'italic' }}>Sin pictogramas</div>
                             )}
                         </div>
+
+                        {/* EPPs */}
+                        {selectedEpps.length > 0 && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px', marginTop: '15px' }}>
+                                {selectedEpps.map(epp => (
+                                    <img key={epp.id} src={epp.img} alt={epp.name} style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Columna Derecha: Frases H y P */}

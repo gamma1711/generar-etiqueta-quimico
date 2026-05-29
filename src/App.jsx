@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { FileText } from 'lucide-react';
+import { FileText, RotateCcw } from 'lucide-react';
 import EtiquetaGHS from './components/EtiquetaGHS';
+import { eppList } from './data/eppData';
 import './App.css';
 
 // Imágenes de pictogramas GHS
@@ -29,22 +30,30 @@ const pictogramsList = [
   { id: 'toxicidad', name: 'Toxicidad Aguda', img: imgSkull },
 ];
 
+const initialFormData = {
+  chemicalName: '',
+  signalWord: '',
+  hazardStatements: '',
+  precautionaryStatements: '',
+  emergencyContact: '',
+  casNumber: '',
+  onuNumber: '',
+  manufacturerName: '',
+  manufacturerPhone: '',
+  manufacturerAddress: '',
+  pictograms: {},
+  epps: {},
+};
+
 function App() {
-  const [formData, setFormData] = useState({
-    chemicalName: '',
-    signalWord: '',
-    hazardStatements: '',
-    precautionaryStatements: '',
-    emergencyContact: '',
-    casNumber: '',
-    onuNumber: '',
-    manufacturerName: '',
-    manufacturerPhone: '',
-    manufacturerAddress: '',
-    pictograms: {},
-  });
+  const [formData, setFormData] = useState(initialFormData);
 
   const labelRef = useRef(null);
+
+  const handleClearForm = () => {
+    setFormData(initialFormData);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,6 +64,13 @@ function App() {
     setFormData((prev) => ({
       ...prev,
       pictograms: { ...prev.pictograms, [id]: !prev.pictograms[id] },
+    }));
+  };
+
+  const handleEppChange = (id) => {
+    setFormData((prev) => ({
+      ...prev,
+      epps: { ...prev.epps, [id]: !prev.epps[id] },
     }));
   };
 
@@ -194,6 +210,21 @@ function App() {
           ))}
         </div>
 
+        {/* ── SECCIÓN: EPPs ── */}
+        <p className="section-title" style={{ marginTop: '24px' }}>Equipo de Protección Personal</p>
+
+        <div className="pictogram-grid" style={{ gridTemplateColumns: 'repeat(12, 1fr)' }}>
+          {eppList.map((epp) => (
+            <div
+              key={epp.id}
+              className={`pictogram-card${formData.epps[epp.id] ? ' selected' : ''}`}
+              onClick={() => handleEppChange(epp.id)}
+            >
+              <img src={epp.img} alt={epp.name} />
+            </div>
+          ))}
+        </div>
+
         {/* Número de ONU */}
         <div style={{ maxWidth: 220, marginTop: 8 }}>
           <Field label="Número de ONU">
@@ -208,8 +239,16 @@ function App() {
 
         <hr className="section-divider" style={{ marginTop: '36px' }} />
 
-        {/* Botón generar al final del formulario */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+        {/* Botones al final del formulario */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '20px' }}>
+          <button 
+            className="btn-generate" 
+            style={{ backgroundColor: '#6b7280' }} 
+            onClick={handleClearForm}
+          >
+            <RotateCcw size={16} />
+            Limpiar Formulario
+          </button>
           <button className="btn-generate" onClick={handlePrint}>
             <FileText size={16} />
             Generar Etiqueta
