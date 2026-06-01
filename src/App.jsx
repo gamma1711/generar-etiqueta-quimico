@@ -213,7 +213,7 @@ function App() {
         {/* ── SECCIÓN: EPPs ── */}
         <p className="section-title" style={{ marginTop: '24px' }}>Equipo de Protección Personal</p>
 
-        <div className="pictogram-grid" style={{ gridTemplateColumns: 'repeat(12, 1fr)' }}>
+        <div className="epp-grid">
           {eppList.map((epp) => (
             <div
               key={epp.id}

@@ -182,6 +182,23 @@ body {
   .pictogram-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* ── Grid EPPs ── */
+.epp-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+  .epp-grid { grid-template-columns: repeat(8, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .epp-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+
 .pictogram-card {
   display: flex;
   flex-direction: column;
